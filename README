@@ -1,0 +1,13 @@
+Team 5
+
+Strategy:
+Bid high on the first day even if we have a loss in order to gain in terms of quality score.
+On subsequent days, if a campaign's budget is 0.1 it means that we lost on the previous day.
+So we increase a factor quadratically and this factor is multiplied to our bids before submission on the next day.
+We tried exponential, linear and quadratic functions. Quadratic seems to perform the best.
+This factor is adjusted on a per day basis depending on whether previous day's campaign was won or lost.
+We have also applied a GREED factor which tells how greedy we are in terms of winning the bid.
+The greed gets accumulated over losing days and it increases and thus lets us make winning bids.
+Whenever the segment to be reached is broad(eg MALE or FEMALE_HIGH_INCOME) we bid on all possible sub segments
+dividing the total budget proportionately this proportion depends on the user distributions and is available in
+`MarketSegment.proportionsMap`.
