@@ -16,9 +16,11 @@ import java.util.Set;
  */
 public class FiveAgent extends ThirtyDaysThirtyCampaignsAgent {
     public static final double ALPHA = 0.25;
-    public static double GREED = 1.2;
-    int consecutiveLosses = 0;
-    double bidPerPerson = 2.5; // Initially we bid 2.5 for day 1.
+    private static double GREED = 1.2;
+    private static double constant = Math.exp(1);
+    private int i = 1;
+    private int consecutiveLosses = 0;
+    private double bidPerPerson = 1.0; // TODO: Initially we bid 2.5 for day 1.
 
     /**
      * Constructor.
@@ -32,7 +34,7 @@ public class FiveAgent extends ThirtyDaysThirtyCampaignsAgent {
 
     public static void main(String[] args) {
         FiveAgent agent = new FiveAgent("localhost", 9898);
-        agent.connect("agent1");
+        agent.connect("5");
     }
 
     @Override
@@ -50,11 +52,16 @@ public class FiveAgent extends ThirtyDaysThirtyCampaignsAgent {
                 // previous bidding was lost
                 consecutiveLosses += 1;
                 // G' = G + (l - 1)^2 * alpha
-                GREED = GREED + Math.pow(consecutiveLosses - 1, 2) * ALPHA;
+//                GREED = GREED + Math.pow(consecutiveLosses - 1, 2) * ALPHA;
+                i += 1;
+                constant = Math.exp(i);
+
             } else {
                 // reset consec loss
                 consecutiveLosses = 0;
-                GREED = 1.2;
+//                GREED = 1.2;
+                i = Math.max(i - 1, 1);
+                constant = Math.exp(i);
             }
 
             // A set to contains our bids for different segments
@@ -87,7 +94,7 @@ public class FiveAgent extends ThirtyDaysThirtyCampaignsAgent {
                     // we lost the previous bid; so bid taking a loss to improve qualityScore // TODO: do not bid if last day
                     bidEntries.add(new SimpleBidEntry(subsegment,
                             GREED * 1.0,
-                            myCampaign.getReach())); // FIXME: what should be the limit here?
+                            myCampaign.getReach() * 0.5)); // FIXME: what should be the limit here?
 //                    bidEntries.add(new SimpleBidEntry(subsegment,
 //                    GREED * (myCampaign.getBudget() * bidPerPerson * budgetScalingfactor * proportion / (double) myCampaign.getReach()),
 //                            myCampaign.getReach())); // FIXME: what should be the limit here?
@@ -147,7 +154,7 @@ public class FiveAgent extends ThirtyDaysThirtyCampaignsAgent {
     }
 
     private double getBudgetMultiple(MarketSegment s) {
-        double constant = 2.0;
+//        double constant = 2.0;
         // Can only bid for 1 segment
         if (threeQualifiedSegments().contains(s)) {
             // Can bid for only 3 qualified segments
